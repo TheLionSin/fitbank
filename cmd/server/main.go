@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fitbank/internal/handler"
+	"fitbank/internal/middleware"
 	"log"
 	"net/http"
 	"os"
@@ -12,13 +13,17 @@ import (
 )
 
 func main() {
-
 	activityHandler := handler.NewActivityHandler()
-
 	mux := http.NewServeMux()
 
-	// Наш тестовый эндпоинт
 	mux.HandleFunc("POST /activities", activityHandler.Create)
+
+	// Оборачиваем mux в middleware (цепочка)
+	// Сначала назначаем ID, потом логируем
+	var handler http.Handler = mux
+	handler = middleware.Logging(handler)
+	handler = middleware.RequestID(handler)
+
 	mux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`{"status":"ok"}`))
 	})
@@ -26,7 +31,7 @@ func main() {
 	// 2. Настраиваем параметры сервера
 	server := &http.Server{
 		Addr:         ":8080",
-		Handler:      mux,
+		Handler:      handler,
 		ReadTimeout:  5 * time.Second,  //сколько времени мы даем клиенту на отправку запроса.
 		WriteTimeout: 10 * time.Second, //сколько времени мы готовы ждать, пока клиент скачивает наш ответ.
 		IdleTimeout:  120 * time.Second,
