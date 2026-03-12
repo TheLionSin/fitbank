@@ -2,21 +2,71 @@ package main
 
 import (
 	"context"
-	"fitbank/internal/handler"
-	"fitbank/internal/middleware"
+	"database/sql"
+	"fitbank/activity-service/internal/config"
+	"fitbank/activity-service/internal/handler"
+	"fitbank/activity-service/internal/middleware"
+	"fitbank/activity-service/internal/repository"
 	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/jackc/pgx/v5/pgxpool"
+	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/pressly/goose/v3"
 )
 
 func main() {
-	activityHandler := handler.NewActivityHandler()
-	mux := http.NewServeMux()
 
+	cfg := config.New()
+
+	// Настраиваем логгер: в проде JSON, в деве — обычный текст
+	var logger *slog.Logger
+	if cfg.Environment == "prod" {
+		logger = slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	} else {
+		logger = slog.New(slog.NewTextHandler(os.Stdout, nil))
+	}
+	slog.SetDefault(logger)
+
+	slog.Info("Starting activity-service", "port", cfg.AppPort, "env", cfg.Environment)
+
+	dbURL := os.Getenv("DB_URL")
+	if dbURL == "" {
+		dbURL = "postgres://postgres:postgres@localhost:5432/fitbank?sslmode=disable" // дефолт для локального запуска
+	}
+
+	dbPool, err := pgxpool.New(context.Background(), dbURL)
+	if err != nil {
+		log.Fatalf("Unable to connect to database: %v", err)
+	}
+	defer dbPool.Close()
+
+	migrationDB, err := sql.Open("pgx", dbURL)
+	if err != nil {
+		log.Fatalf("failed to open db for migrations: %v", err)
+	}
+
+	log.Println("Running migrations...")
+	if err := goose.Up(migrationDB, "migrations"); err != nil {
+		log.Fatalf("migrations failed: %v", err)
+	}
+	migrationDB.Close() // Закрываем его, он больше не нужен
+	log.Println("Migrations finished!")
+
+	repo := repository.NewPostgresRepository(dbPool)
+	activityHandler := handler.NewActivityHandler(repo)
+
+	mux := http.NewServeMux()
 	mux.HandleFunc("POST /activities", activityHandler.Create)
+	mux.HandleFunc("GET /activities", activityHandler.List)
+	mux.HandleFunc("GET /activities/{id}", activityHandler.Get)
+	mux.HandleFunc("PUT /activities/{id}", activityHandler.Update)
+	mux.HandleFunc("DELETE /activities/{id}", activityHandler.Delete)
 
 	// Оборачиваем mux в middleware (цепочка)
 	// Сначала назначаем ID, потом логируем
