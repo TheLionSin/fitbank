@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package activity;
+
+// Путь, по которому будет сгенерирован Go-пакет
+option go_package = "fitbank/activity-service/pkg/api;activitypb";
+
+import "google/protobuf/timestamp.proto";
+
+// Сервис для работы с активностями
+service ActivityService {
+rpc CreateActivity(CreateActivityRequest) returns (ActivityResponse);
+rpc GetActivity(GetActivityRequest) returns (ActivityResponse);
+}
+
+// Сообщения запросов и ответов
+message CreateActivityRequest {
+string type = 1;
+double weight = 2;
+int32 reps = 3;
+}
+
+message GetActivityRequest {
+string id = 1;
+}
+
+message ActivityResponse {
+string id = 1;
+string type = 2;
+double weight = 3;
+int32 reps = 4;
+google.protobuf.Timestamp created_at = 5;
+}
