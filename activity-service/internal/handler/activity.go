@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"fitbank/activity-service/internal/app"
-	"fitbank/activity-service/internal/domain"
 	"log"
 	"log/slog"
 	"net/http"
@@ -20,23 +19,25 @@ func NewActivityHandler(service app.ActivityUseCase) *ActivityHandler {
 }
 
 func (h *ActivityHandler) Create(w http.ResponseWriter, r *http.Request) {
-	var act domain.Activity
-	if err := json.NewDecoder(r.Body).Decode(&act); err != nil {
+	var req CreateActivityRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
 
 	// Вызываем сервис. Он сам провалидирует, создаст UUID и сохранит.
-	result, err := h.service.Create(r.Context(), act)
+	// Маппим DTO в доменную модель и отдаем сервису
+	act, err := h.service.Create(r.Context(), req.ToDomain())
 	if err != nil {
-		// Тут можно проверять тип ошибки и отдавать 400 или 500
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(result)
+	json.NewEncoder(w).Encode(act)
 }
 
 func (h *ActivityHandler) List(w http.ResponseWriter, r *http.Request) {
@@ -68,35 +69,23 @@ func (h *ActivityHandler) Get(w http.ResponseWriter, r *http.Request) {
 func (h *ActivityHandler) Update(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 
-	var act domain.Activity
-	if err := json.NewDecoder(r.Body).Decode(&act); err != nil {
+	var req UpdateActivityRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	act.ID = id
-
-	if err := act.Validate(); err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
-		return
-	}
-
-	if err := h.service.Update(r.Context(), act); err != nil {
+	if err := h.service.Update(r.Context(), req.ToDomain(id)); err != nil {
 		if err.Error() == "activity not found" {
 			http.Error(w, err.Error(), http.StatusNotFound)
 			return
 		}
 
-		slog.Error("failed to update activity", "id", id, "error", err)
-		http.Error(w, "internal server error", http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(act)
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func (h *ActivityHandler) Delete(w http.ResponseWriter, r *http.Request) {

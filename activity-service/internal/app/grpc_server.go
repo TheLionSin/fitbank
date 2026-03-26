@@ -5,6 +5,8 @@ import (
 	"fitbank/activity-service/internal/domain"
 	activitypb "fitbank/activity-service/pkg/api"
 
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -18,26 +20,22 @@ func NewGRPCServer(service ActivityUseCase) *ActivityGRPCServer {
 }
 
 func (s *ActivityGRPCServer) CreateActivity(ctx context.Context, req *activitypb.CreateActivityRequest) (*activitypb.ActivityResponse, error) {
-	act := domain.Activity{
+	act, err := s.service.Create(ctx, domain.Activity{
 		Type:   req.Type,
 		Weight: req.Weight,
 		Reps:   int(req.Reps),
-	}
+	})
 
-	if err := act.Validate(); err != nil {
-		return nil, err
-	}
-
-	createdAct, err := s.service.Create(ctx, act)
 	if err != nil {
-		return nil, err
+		return nil, status.Errorf(codes.InvalidArgument, "invalid data: %v", err)
+
 	}
 
 	return &activitypb.ActivityResponse{
-		Id:        createdAct.ID,
-		Type:      createdAct.Type,
-		Weight:    createdAct.Weight,
-		Reps:      int32(createdAct.Reps),
-		CreatedAt: timestamppb.New(createdAct.CreatedAt),
+		Id:        act.ID,
+		Type:      act.Type,
+		Weight:    act.Weight,
+		Reps:      int32(act.Reps),
+		CreatedAt: timestamppb.New(act.CreatedAt),
 	}, nil
 }
