@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"fitbank/activity-service/internal/app"
+	"fitbank/activity-service/internal/metrics"
 	"log"
 	"log/slog"
 	"net/http"
@@ -34,6 +35,8 @@ func (h *ActivityHandler) Create(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
 		return
 	}
+
+	metrics.ActivitiesCreatedTotal.Inc()
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)

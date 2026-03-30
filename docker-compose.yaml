@@ -1,0 +1,22 @@
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: fitbank
+    ports:
+      - "5432:5432"
+
+
+  activity-service:
+    build:
+      context: ./activity-service
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+      - "50051:50051"
+    environment:
+      DB_URL: "postgres://postgres:postgres@db:5432/fitbank?sslmode=disable"
+    depends_on:
+      - db

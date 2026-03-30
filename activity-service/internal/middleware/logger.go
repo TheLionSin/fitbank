@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fitbank/activity-service/internal/metrics"
 	"log"
 	"net/http"
 	"time"
@@ -14,6 +15,7 @@ func Logging(next http.Handler) http.Handler {
 		// Передаем управление следующему хендлеру в цепочке
 		next.ServeHTTP(w, r)
 
+		metrics.RequestDuration.WithLabelValues(r.Method, r.URL.Path).Observe(time.Since(start).Seconds())
 		log.Printf("METHOD: %s | PATH: %s | DURATION: %v",
 			r.Method,
 			r.URL.Path,

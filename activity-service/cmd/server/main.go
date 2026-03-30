@@ -21,6 +21,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/pressly/goose/v3"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
 )
@@ -102,6 +103,7 @@ func main() {
 		mux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte(`{"status":"ok"}`))
 		})
+		mux.Handle("/metrics", promhttp.Handler())
 
 		// Оборачиваем в Middleware
 		var finalHandler http.Handler = mux
