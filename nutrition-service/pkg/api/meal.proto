@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package nutrition;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "fitbank/nutrition-service/pkg/api;nutritionpb";
+
+// Сервис для учета питания
+service NutritionService {
+  // Добавить прием пищи
+  rpc AddMeal(AddMealRequest) returns (MealResponse);
+  // Получить отчет за день (сколько всего съедено)
+  rpc GetDailyReport(DailyReportRequest) returns (DailyReportResponse);
+}
+
+message AddMealRequest {
+  string name = 1;
+  double calories = 2;
+  double proteins= 3;
+  double fats = 4;
+  double carbohydrates = 5;
+  int32 weight_grams = 6;
+}
+
+message MealResponse {
+  string id = 1;
+  string name = 2;
+  double calories = 3;
+  double proteins = 4;
+  double fats = 5;
+  double carbohydrates = 6;
+  int32 weight_grams = 7;
+  google.protobuf.Timestamp created_at = 8;
+}
+
+message DailyReportRequest {
+  string user_id = 1; // Пока заглушка, но в будущем пригодится
+}
+
+message DailyReportResponse {
+  double total_calories = 1;
+  double total_proteins = 2;
+  double total_fats = 3;
+  double total_carbs = 4;
+}
