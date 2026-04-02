@@ -11,6 +11,17 @@ import "google/protobuf/timestamp.proto";
 service ActivityService {
 rpc CreateActivity(CreateActivityRequest) returns (ActivityResponse);
 rpc GetActivity(GetActivityRequest) returns (ActivityResponse);
+rpc ListActivities(ListActivitiesRequest) returns (ListActivitiesResponse);
+}
+
+// Запрос может быть пустым (получить всё) или с фильтрами
+message ListActivitiesRequest{
+  string user_id = 1;
+}
+
+message ListActivitiesResponse{
+  // repeated — это аналог слайса ([]ActivityResponse) в Go
+  repeated ActivityResponse activities = 1;
 }
 
 // Сообщения запросов и ответов

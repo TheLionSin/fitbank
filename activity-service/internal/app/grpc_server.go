@@ -19,6 +19,28 @@ func NewGRPCServer(service ActivityUseCase) *ActivityGRPCServer {
 	return &ActivityGRPCServer{service: service}
 }
 
+func (s *ActivityGRPCServer) ListActivities(ctx context.Context, req *activitypb.ListActivitiesRequest) (*activitypb.ListActivitiesResponse, error) {
+	// 1. Получаем данные из бизнес-логики
+	activities, err := s.service.FetchAll(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to fetch activities: %v", err)
+	}
+
+	// 2. Маппим доменные модели в gRPC-ответ
+	var pbActivities []*activitypb.ActivityResponse
+	for _, a := range activities {
+		pbActivities = append(pbActivities, &activitypb.ActivityResponse{
+			Id:     a.ID,
+			Type:   a.Type,
+			Weight: a.Weight,
+			Reps:   int32(a.Reps),
+		})
+	}
+	return &activitypb.ListActivitiesResponse{
+		Activities: pbActivities,
+	}, nil
+}
+
 func (s *ActivityGRPCServer) CreateActivity(ctx context.Context, req *activitypb.CreateActivityRequest) (*activitypb.ActivityResponse, error) {
 	act, err := s.service.Create(ctx, domain.Activity{
 		Type:   req.Type,

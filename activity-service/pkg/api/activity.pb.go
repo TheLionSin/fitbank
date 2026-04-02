@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        v3.21.12
-// source: api/proto/activity.proto
+// source: pkg/api/activity.proto
 
 package activitypb
 
@@ -22,6 +22,96 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Запрос может быть пустым (получить всё) или с фильтрами
+type ListActivitiesRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListActivitiesRequest) Reset() {
+	*x = ListActivitiesRequest{}
+	mi := &file_pkg_api_activity_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListActivitiesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListActivitiesRequest) ProtoMessage() {}
+
+func (x *ListActivitiesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pkg_api_activity_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListActivitiesRequest.ProtoReflect.Descriptor instead.
+func (*ListActivitiesRequest) Descriptor() ([]byte, []int) {
+	return file_pkg_api_activity_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *ListActivitiesRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+type ListActivitiesResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// repeated — это аналог слайса ([]ActivityResponse) в Go
+	Activities    []*ActivityResponse `protobuf:"bytes,1,rep,name=activities,proto3" json:"activities,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListActivitiesResponse) Reset() {
+	*x = ListActivitiesResponse{}
+	mi := &file_pkg_api_activity_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListActivitiesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListActivitiesResponse) ProtoMessage() {}
+
+func (x *ListActivitiesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_pkg_api_activity_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListActivitiesResponse.ProtoReflect.Descriptor instead.
+func (*ListActivitiesResponse) Descriptor() ([]byte, []int) {
+	return file_pkg_api_activity_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *ListActivitiesResponse) GetActivities() []*ActivityResponse {
+	if x != nil {
+		return x.Activities
+	}
+	return nil
+}
+
 // Сообщения запросов и ответов
 type CreateActivityRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -34,7 +124,7 @@ type CreateActivityRequest struct {
 
 func (x *CreateActivityRequest) Reset() {
 	*x = CreateActivityRequest{}
-	mi := &file_api_proto_activity_proto_msgTypes[0]
+	mi := &file_pkg_api_activity_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -46,7 +136,7 @@ func (x *CreateActivityRequest) String() string {
 func (*CreateActivityRequest) ProtoMessage() {}
 
 func (x *CreateActivityRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_activity_proto_msgTypes[0]
+	mi := &file_pkg_api_activity_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -59,7 +149,7 @@ func (x *CreateActivityRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateActivityRequest.ProtoReflect.Descriptor instead.
 func (*CreateActivityRequest) Descriptor() ([]byte, []int) {
-	return file_api_proto_activity_proto_rawDescGZIP(), []int{0}
+	return file_pkg_api_activity_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *CreateActivityRequest) GetType() string {
@@ -92,7 +182,7 @@ type GetActivityRequest struct {
 
 func (x *GetActivityRequest) Reset() {
 	*x = GetActivityRequest{}
-	mi := &file_api_proto_activity_proto_msgTypes[1]
+	mi := &file_pkg_api_activity_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -104,7 +194,7 @@ func (x *GetActivityRequest) String() string {
 func (*GetActivityRequest) ProtoMessage() {}
 
 func (x *GetActivityRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_activity_proto_msgTypes[1]
+	mi := &file_pkg_api_activity_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -117,7 +207,7 @@ func (x *GetActivityRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetActivityRequest.ProtoReflect.Descriptor instead.
 func (*GetActivityRequest) Descriptor() ([]byte, []int) {
-	return file_api_proto_activity_proto_rawDescGZIP(), []int{1}
+	return file_pkg_api_activity_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *GetActivityRequest) GetId() string {
@@ -140,7 +230,7 @@ type ActivityResponse struct {
 
 func (x *ActivityResponse) Reset() {
 	*x = ActivityResponse{}
-	mi := &file_api_proto_activity_proto_msgTypes[2]
+	mi := &file_pkg_api_activity_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -152,7 +242,7 @@ func (x *ActivityResponse) String() string {
 func (*ActivityResponse) ProtoMessage() {}
 
 func (x *ActivityResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_activity_proto_msgTypes[2]
+	mi := &file_pkg_api_activity_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -165,7 +255,7 @@ func (x *ActivityResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ActivityResponse.ProtoReflect.Descriptor instead.
 func (*ActivityResponse) Descriptor() ([]byte, []int) {
-	return file_api_proto_activity_proto_rawDescGZIP(), []int{2}
+	return file_pkg_api_activity_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *ActivityResponse) GetId() string {
@@ -203,11 +293,17 @@ func (x *ActivityResponse) GetCreatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
-var File_api_proto_activity_proto protoreflect.FileDescriptor
+var File_pkg_api_activity_proto protoreflect.FileDescriptor
 
-const file_api_proto_activity_proto_rawDesc = "" +
+const file_pkg_api_activity_proto_rawDesc = "" +
 	"\n" +
-	"\x18api/proto/activity.proto\x12\bactivity\x1a\x1fgoogle/protobuf/timestamp.proto\"W\n" +
+	"\x16pkg/api/activity.proto\x12\bactivity\x1a\x1fgoogle/protobuf/timestamp.proto\"0\n" +
+	"\x15ListActivitiesRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\"T\n" +
+	"\x16ListActivitiesResponse\x12:\n" +
+	"\n" +
+	"activities\x18\x01 \x03(\v2\x1a.activity.ActivityResponseR\n" +
+	"activities\"W\n" +
 	"\x15CreateActivityRequest\x12\x12\n" +
 	"\x04type\x18\x01 \x01(\tR\x04type\x12\x16\n" +
 	"\x06weight\x18\x02 \x01(\x01R\x06weight\x12\x12\n" +
@@ -220,63 +316,69 @@ const file_api_proto_activity_proto_rawDesc = "" +
 	"\x06weight\x18\x03 \x01(\x01R\x06weight\x12\x12\n" +
 	"\x04reps\x18\x04 \x01(\x05R\x04reps\x129\n" +
 	"\n" +
-	"created_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt2\xa9\x01\n" +
+	"created_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt2\xfe\x01\n" +
 	"\x0fActivityService\x12M\n" +
 	"\x0eCreateActivity\x12\x1f.activity.CreateActivityRequest\x1a\x1a.activity.ActivityResponse\x12G\n" +
-	"\vGetActivity\x12\x1c.activity.GetActivityRequest\x1a\x1a.activity.ActivityResponseB-Z+fitbank/activity-service/pkg/api;activitypbb\x06proto3"
+	"\vGetActivity\x12\x1c.activity.GetActivityRequest\x1a\x1a.activity.ActivityResponse\x12S\n" +
+	"\x0eListActivities\x12\x1f.activity.ListActivitiesRequest\x1a .activity.ListActivitiesResponseB-Z+fitbank/activity-service/pkg/api;activitypbb\x06proto3"
 
 var (
-	file_api_proto_activity_proto_rawDescOnce sync.Once
-	file_api_proto_activity_proto_rawDescData []byte
+	file_pkg_api_activity_proto_rawDescOnce sync.Once
+	file_pkg_api_activity_proto_rawDescData []byte
 )
 
-func file_api_proto_activity_proto_rawDescGZIP() []byte {
-	file_api_proto_activity_proto_rawDescOnce.Do(func() {
-		file_api_proto_activity_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_api_proto_activity_proto_rawDesc), len(file_api_proto_activity_proto_rawDesc)))
+func file_pkg_api_activity_proto_rawDescGZIP() []byte {
+	file_pkg_api_activity_proto_rawDescOnce.Do(func() {
+		file_pkg_api_activity_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_pkg_api_activity_proto_rawDesc), len(file_pkg_api_activity_proto_rawDesc)))
 	})
-	return file_api_proto_activity_proto_rawDescData
+	return file_pkg_api_activity_proto_rawDescData
 }
 
-var file_api_proto_activity_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
-var file_api_proto_activity_proto_goTypes = []any{
-	(*CreateActivityRequest)(nil), // 0: activity.CreateActivityRequest
-	(*GetActivityRequest)(nil),    // 1: activity.GetActivityRequest
-	(*ActivityResponse)(nil),      // 2: activity.ActivityResponse
-	(*timestamppb.Timestamp)(nil), // 3: google.protobuf.Timestamp
+var file_pkg_api_activity_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_pkg_api_activity_proto_goTypes = []any{
+	(*ListActivitiesRequest)(nil),  // 0: activity.ListActivitiesRequest
+	(*ListActivitiesResponse)(nil), // 1: activity.ListActivitiesResponse
+	(*CreateActivityRequest)(nil),  // 2: activity.CreateActivityRequest
+	(*GetActivityRequest)(nil),     // 3: activity.GetActivityRequest
+	(*ActivityResponse)(nil),       // 4: activity.ActivityResponse
+	(*timestamppb.Timestamp)(nil),  // 5: google.protobuf.Timestamp
 }
-var file_api_proto_activity_proto_depIdxs = []int32{
-	3, // 0: activity.ActivityResponse.created_at:type_name -> google.protobuf.Timestamp
-	0, // 1: activity.ActivityService.CreateActivity:input_type -> activity.CreateActivityRequest
-	1, // 2: activity.ActivityService.GetActivity:input_type -> activity.GetActivityRequest
-	2, // 3: activity.ActivityService.CreateActivity:output_type -> activity.ActivityResponse
-	2, // 4: activity.ActivityService.GetActivity:output_type -> activity.ActivityResponse
-	3, // [3:5] is the sub-list for method output_type
-	1, // [1:3] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+var file_pkg_api_activity_proto_depIdxs = []int32{
+	4, // 0: activity.ListActivitiesResponse.activities:type_name -> activity.ActivityResponse
+	5, // 1: activity.ActivityResponse.created_at:type_name -> google.protobuf.Timestamp
+	2, // 2: activity.ActivityService.CreateActivity:input_type -> activity.CreateActivityRequest
+	3, // 3: activity.ActivityService.GetActivity:input_type -> activity.GetActivityRequest
+	0, // 4: activity.ActivityService.ListActivities:input_type -> activity.ListActivitiesRequest
+	4, // 5: activity.ActivityService.CreateActivity:output_type -> activity.ActivityResponse
+	4, // 6: activity.ActivityService.GetActivity:output_type -> activity.ActivityResponse
+	1, // 7: activity.ActivityService.ListActivities:output_type -> activity.ListActivitiesResponse
+	5, // [5:8] is the sub-list for method output_type
+	2, // [2:5] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
-func init() { file_api_proto_activity_proto_init() }
-func file_api_proto_activity_proto_init() {
-	if File_api_proto_activity_proto != nil {
+func init() { file_pkg_api_activity_proto_init() }
+func file_pkg_api_activity_proto_init() {
+	if File_pkg_api_activity_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_proto_activity_proto_rawDesc), len(file_api_proto_activity_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_pkg_api_activity_proto_rawDesc), len(file_pkg_api_activity_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_api_proto_activity_proto_goTypes,
-		DependencyIndexes: file_api_proto_activity_proto_depIdxs,
-		MessageInfos:      file_api_proto_activity_proto_msgTypes,
+		GoTypes:           file_pkg_api_activity_proto_goTypes,
+		DependencyIndexes: file_pkg_api_activity_proto_depIdxs,
+		MessageInfos:      file_pkg_api_activity_proto_msgTypes,
 	}.Build()
-	File_api_proto_activity_proto = out.File
-	file_api_proto_activity_proto_goTypes = nil
-	file_api_proto_activity_proto_depIdxs = nil
+	File_pkg_api_activity_proto = out.File
+	file_pkg_api_activity_proto_goTypes = nil
+	file_pkg_api_activity_proto_depIdxs = nil
 }
