@@ -1,39 +1,39 @@
 # СТАДИЯ 1: Сборка (Builder)
 FROM golang:1.26-alpine AS builder
 
-# Устанавливаем необходимые инструменты для сборки (если нужны)
 RUN apk add --no-cache git
 
 WORKDIR /app
 
-# Сначала копируем зависимости, чтобы Docker мог их закэшировать
-COPY go.mod go.sum ./
+# 1. Кэшируем зависимости
+COPY go.work ./
+COPY activity-service/go.mod activity-service/go.sum ./activity-service/
+COPY nutrition-service/go.mod nutrition-service/go.sum ./nutrition-service/
+
 RUN go mod download
 
-# Копируем исходный код
+# 2. Копируем весь код
 COPY . .
 
-# Собираем бинарный файл.
-# CGO_ENABLED=0 делает бинарник статическим (не нужны системные библиотеки)
-# GOOS=linux говорит собирать под Linux
+# 3. Переходим в папку питания
+WORKDIR /app/nutrition-service
+
+# Собираем
 RUN CGO_ENABLED=0 GOOS=linux go build -o nutrition-service ./cmd/server/main.go
 
-# СТАДИЯ 2: Финальный образ (Runner)
-# Используем минимальный образ Alpine (всего 5МБ)
-FROM alpine:latest
 
-# Добавляем сертификаты (нужны для HTTPS запросов, если будут)
+# СТАДИЯ 2: Финальный образ (Runner)
+FROM alpine:latest
 RUN apk --no-cache add ca-certificates
 
 WORKDIR /root/
 
-# Копируем ТОЛЬКО скомпилированный файл из стадии builder
-COPY --from=builder /app/nutrition-service .
-# Копируем папку с миграциями, так как они нужны в рантайме
-COPY --from=builder /app/migrations ./migrations
+# Копируем бинарник из подпапки builder
+COPY --from=builder /app/nutrition-service/nutrition-service .
 
-# Открываем порты
+# КРИТИЧНО: Копируем миграции именно этого сервиса
+COPY --from=builder /app/nutrition-service/migrations ./migrations
+
 EXPOSE 8081 50052
 
-# Запускаем наше приложение
 CMD ["./nutrition-service"]

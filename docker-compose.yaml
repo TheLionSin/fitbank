@@ -19,8 +19,8 @@ services:
   # --- СЕРВИС АКТИВНОСТЕЙ ---
   activity-service:
     build:
-      context: ./activity-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: activity-service/Dockerfile
     container_name: activity-service
     environment:
     # Внутри сети Docker мы обращаемся к базе по имени сервиса 'activity-db'
@@ -51,8 +51,8 @@ services:
   # --- СЕРВИС ПИТАНИЯ ---
   nutrition-service:
     build:
-      context: ./nutrition-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: nutrition-service/Dockerfile
     container_name: nutrition-service
     environment:
       - DB_URL=postgres://postgres:postgres@nutrition-db:5432/nutrition_db?sslmode=disable
